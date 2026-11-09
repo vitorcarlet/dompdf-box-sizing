@@ -70,10 +70,10 @@ class TableCell extends BlockFrameDecorator
                 $style->padding_bottom,
                 $style->margin_bottom
             ],
-            (float)$style->length_in_pt($style->height)
+            $this->get_containing_block("w") ?? 0
         );
 
-        $new_height = $height - $v_space;
+        $new_height = max(0.0, $height - $v_space);
         $style->set_used("height", $new_height);
 
         if ($new_height > $this->content_height) {

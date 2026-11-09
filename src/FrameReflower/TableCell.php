@@ -63,23 +63,23 @@ class TableCell extends Block
         $left_space = (float)$style->length_in_pt([$style->margin_left,
                 $style->padding_left,
                 $style->border_left_width],
-            $w);
+            $frame->get_containing_block("w"));
 
         $right_space = (float)$style->length_in_pt([$style->padding_right,
                 $style->margin_right,
                 $style->border_right_width],
-            $w);
+            $frame->get_containing_block("w"));
 
         $top_space = (float)$style->length_in_pt([$style->margin_top,
                 $style->padding_top,
                 $style->border_top_width],
-            $h);
+            $frame->get_containing_block("w"));
         $bottom_space = (float)$style->length_in_pt([$style->margin_bottom,
                 $style->padding_bottom,
                 $style->border_bottom_width],
-            $h);
+            $frame->get_containing_block("w"));
 
-        $cb_w = $w - $left_space - $right_space;
+        $cb_w = max(0.0, $w - $left_space - $right_space);
         $style->set_used("width", $cb_w);
 
         $content_x = $x + $left_space;
@@ -108,18 +108,18 @@ class TableCell extends Block
         }
 
         // Determine our height
-        $style_height = (float) $style->length_in_pt($style->height, $h);
+        $style_height = (float) $style->resolve_content_box_size($style->height, $h ?? 0, $frame->get_containing_block("w") ?? 0, true);
         $content_height = $this->_calculate_content_height();
-        $height = max($style_height, $content_height);
+        $height = max($content_height, Helpers::clamp(
+            max($style_height, $content_height),
+            $this->resolve_min_height($h),
+            $this->resolve_max_height($h)
+        ));
 
         $frame->set_content_height($content_height);
 
         // Let the cellmap know our height
-        $cell_height = $height / count($cells["rows"]);
-
-        if ($style_height <= $height) {
-            $cell_height += $top_space + $bottom_space;
-        }
+        $cell_height = ($height + $top_space + $bottom_space) / count($cells["rows"]);
 
         foreach ($cells["rows"] as $i) {
             $cellmap->set_row_height($i, $cell_height);
@@ -149,7 +149,7 @@ class TableCell extends Block
         // For table cells: Use specified width if it is greater than the
         // minimum defined by the content
         if ($fixed_width) {
-            $width = (float) $style->length_in_pt($width, 0);
+            $width = (float) $style->resolve_content_box_size($width, 0, 0);
             $min = max($width, $min);
             $max = $min;
         }

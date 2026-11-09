@@ -73,10 +73,14 @@ class Table extends AbstractFrameReflower
         $columns =& $this->_frame->get_cellmap()->get_columns();
 
         $width = $style->width;
-        $min_table_width = $this->resolve_min_width($cb["w"]) - $delta;
+        // The edge spacing is stored internally as padding, but belongs to
+        // the CSS content box and must also be removed for content-box sizes.
+        $spacing = $style->border_collapse === "separate" ? $style->border_spacing[0] : 0.0;
+        $min_table_width = max($min_width, $this->resolve_min_width($cb["w"]) - $spacing);
+        $max_table_width = max($min_table_width, $this->resolve_max_width($cb["w"]) - $spacing);
 
         if ($width !== "auto") {
-            $preferred_width = (float) $style->length_in_pt($width, $cb["w"]) - $delta;
+            $preferred_width = (float) $style->resolve_content_box_size($width, $cb["w"], $cb["w"]) - $spacing;
 
             if ($preferred_width < $min_table_width) {
                 $preferred_width = $min_table_width;
@@ -103,6 +107,8 @@ class Table extends AbstractFrameReflower
 
         }
 
+        $width = Helpers::clamp($width, $min_table_width, $max_table_width);
+
         // Store our resolved width
         $style->set_used("width", $width);
 
@@ -111,6 +117,9 @@ class Table extends AbstractFrameReflower
         if ($cellmap->is_columns_locked()) {
             return;
         }
+
+        $cellmap->resolve_percent_columns($width);
+        $percent_used = array_sum(array_column($columns, "percent"));
 
         // If the whole table fits on the page, then assign each column it's max width
         if ($width == $max_width) {
@@ -260,10 +269,13 @@ class Table extends AbstractFrameReflower
         $style = $frame->get_style();
         $cb = $frame->get_containing_block();
 
-        $height = $style->length_in_pt($style->height, $cb["h"]);
+        $height = $style->resolve_content_box_size($style->height, $cb["h"] ?? 0, $cb["w"], true);
+        $spacing = $style->border_collapse === "separate" ? $style->border_spacing[1] : 0.0;
+        if ($height !== "auto") {
+            $height = max(0.0, $height - $spacing);
+        }
 
         $cellmap = $frame->get_cellmap();
-        $cellmap->assign_frame_heights();
         $rows = $cellmap->get_rows();
 
         // Determine our content height
@@ -278,16 +290,16 @@ class Table extends AbstractFrameReflower
 
         // Handle min/max height
         // https://www.w3.org/TR/CSS21/visudet.html#min-max-heights
-        $min_height = $this->resolve_min_height($cb["h"]);
-        $max_height = $this->resolve_max_height($cb["h"]);
+        $min_height = max(0.0, $this->resolve_min_height($cb["h"]) - $spacing);
+        $max_height = max(0.0, $this->resolve_max_height($cb["h"]) - $spacing);
         $height = Helpers::clamp($height, $min_height, $max_height);
 
         // Use the content height or the height value, whichever is greater
         if ($height <= $content_height) {
             $height = $content_height;
+            $cellmap->assign_frame_heights();
         } else {
-            // FIXME: Borders and row positions are not properly updated by this
-            // $cellmap->set_frame_heights($height, $content_height);
+            $cellmap->set_frame_heights($height, $content_height);
         }
 
         return $height;

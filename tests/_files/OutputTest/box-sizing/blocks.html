@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+@page { size: 460pt 800pt; margin: 20pt; }
+body { margin: 0; font: 10pt Helvetica; }
+h1 { font-size: 16pt; }
+p { margin: 12pt 0 6pt; }
+.box { width: 200pt; height: 60pt; padding: 10pt; border: 2pt solid #194b70; background: #d9eaf5; }
+.border { box-sizing: border-box; }
+.half { display: inline-block; vertical-align: top; box-sizing: border-box; width: 50%; height: 60pt; padding: 10pt; border: 2pt solid #194b70; background: #d9eaf5; }
+.limits { box-sizing: border-box; width: 300pt; max-width: 200pt; height: 100pt; max-height: 60pt; padding: 10pt; border: 2pt solid #194b70; background: #d9eaf5; }
+</style>
+</head>
+<body>
+<h1>Box sizing: blocks</h1>
+<p>content-box: 200pt content, 224pt outer width</p>
+<div class="box">Content + padding + border</div>
+<p>border-box: 176pt content, 200pt outer width</p>
+<div class="box border">Padding and border inside 200pt</div>
+<p>Two 50% border-box elements on the same line</p>
+<div class="half">Left half</div><div class="half">Right half</div>
+<p>max-width and max-height: 200pt by 60pt outer size</p>
+<div class="limits">Maximum dimensions include padding and border</div>
+<p>Image: 200pt outer width, automatic proportional height</p>
+<img class="border" style="width:200pt;padding:10pt;border:2pt solid #194b70" src="../../square.svg" alt="Square">
+</body>
+</html>

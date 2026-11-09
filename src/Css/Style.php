@@ -59,6 +59,7 @@ use Dompdf\Helpers;
  * @property string               $background_repeat
  * @property array|string         $background_size             `cover`, `contain`, or `[width, height]`, each being a length, percentage, or `auto`
  * @property string               $border_collapse
+ * @property string               $box_sizing                   `content-box` or `border-box`
  * @property string               $border_color                Only use for setting all sides to the same color
  * @property float[]              $border_spacing              Pair of `[horizontal, vertical]` spacing
  * @property string               $border_style                Only use for setting all sides to the same style
@@ -904,6 +905,7 @@ class Style
             $d["z_index"] = "auto";
 
             // CSS3
+            $d["box_sizing"] = "content-box";
             $d["opacity"] = 1.0;
             $d["background_size"] = ["auto", "auto"];
             $d["transform"] = [];
@@ -3421,6 +3423,47 @@ class Style
         }
 
         return $break;
+    }
+
+    /**
+     * @link https://www.w3.org/TR/css-sizing-3/#box-sizing
+     */
+    protected function _compute_box_sizing(string $val): ?string
+    {
+        $val = strtolower($val);
+        return $val === "content-box" || $val === "border-box" ? $val : null;
+    }
+
+    /**
+     * Resolve a declared size to the internal content-box size in points.
+     *
+     * Percentage padding uses the containing-block width in both axes. The
+     * computed padding excludes synthetic table border spacing, while used
+     * borders include the resolved widths of collapsed table-cell borders.
+     * Automatic sizes are already calculated by layout and are not adjusted.
+     *
+     * @param float|string $size           Computed size, or `auto`/`none`.
+     * @param float        $reference_size Reference for percentage sizes.
+     * @param float        $cb_width       Reference for percentage padding.
+     * @param bool         $vertical       Whether to resolve a height.
+     *
+     * @return float|string
+     */
+    public function resolve_content_box_size($size, float $reference_size, float $cb_width, bool $vertical = false)
+    {
+        $size = $this->length_in_pt($size, $reference_size);
+        if ($size === "auto" || $size === "none" || $this->box_sizing !== "border-box") {
+            return $size;
+        }
+
+        $sides = $vertical ? ["top", "bottom"] : ["left", "right"];
+        $spacing = 0.0;
+        foreach ($sides as $side) {
+            $spacing += $this->length_in_pt($this->computed("padding_$side"), $cb_width)
+                + $this->{"border_{$side}_width"};
+        }
+
+        return max(0.0, $size - $spacing);
     }
 
     /**

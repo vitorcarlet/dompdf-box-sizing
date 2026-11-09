@@ -231,7 +231,7 @@ class Block extends AbstractFrameReflower
             throw new Exception("Box property calculation requires containing block width");
         }
 
-        $width = $style->length_in_pt($style->width, $cb["w"]);
+        $width = $style->resolve_content_box_size($style->width, $cb["w"], $cb["w"]);
 
         $values = $this->_calculate_width($width);
         $margin_left = $values["margin_left"];
@@ -292,12 +292,35 @@ class Block extends AbstractFrameReflower
      */
     protected function _calculate_restricted_height()
     {
+        $style = $this->_frame->get_style();
+        $cb = $this->_frame->get_containing_block();
+        $height = $style->resolve_content_box_size($style->height, $cb["h"] ?? 0, $cb["w"], true);
+        $values = $this->_calculate_height($height);
+        $min_height = $this->resolve_min_height($cb["h"]);
+        $max_height = $this->resolve_max_height($cb["h"]);
+
+        if ($values[0] > $max_height) {
+            $values = $this->_calculate_height($max_height);
+        }
+        if ($values[0] < $min_height) {
+            $values = $this->_calculate_height($min_height);
+        }
+        return $values;
+    }
+
+    /**
+     * Resolve height, margins, and offsets using a content-box height.
+     *
+     * @param float|string $height A content-box height in points, or `auto`.
+     * @return array
+     */
+    protected function _calculate_height($height)
+    {
         $frame = $this->_frame;
         $style = $frame->get_style();
         $content_height = $this->_calculate_content_height();
         $cb = $frame->get_containing_block();
 
-        $height = $style->length_in_pt($style->height, $cb["h"]);
         $margin_top = $style->length_in_pt($style->margin_top, $cb["w"]);
         $margin_bottom = $style->length_in_pt($style->margin_bottom, $cb["w"]);
 
@@ -406,19 +429,7 @@ class Block extends AbstractFrameReflower
             if ($margin_bottom === "auto") {
                 $margin_bottom = 0;
             }
-
-            // Handle min/max height
-            // https://www.w3.org/TR/CSS21/visudet.html#min-max-heights
-            $min_height = $this->resolve_min_height($cb["h"]);
-            $max_height = $this->resolve_max_height($cb["h"]);
-            $height = Helpers::clamp($height, $min_height, $max_height);
         }
-
-        // TODO: Need to also take min/max height into account for absolute
-        // positioning, using similar logic to the `_calculate_width`/
-        // `calculate_restricted_width` split above. The non-absolute case
-        // can simply clamp height within min/max, as margins and offsets are
-        // not affected
 
         return [$height, $margin_top, $margin_bottom, $top, $bottom];
     }
@@ -848,7 +859,10 @@ class Block extends AbstractFrameReflower
 
         $cb_y = $y + $top;
 
-        $height = $style->length_in_pt($style->height, $cb["h"]);
+        $height = $style->resolve_content_box_size($style->height, $cb["h"] ?? 0, $cb["w"], true);
+        if ($height !== "auto") {
+            $height = Helpers::clamp($height, $this->resolve_min_height($cb["h"]), $this->resolve_max_height($cb["h"]));
+        }
         if ($height === "auto") {
             $height = ($cb["h"] + $cb["y"]) - $bottom - $cb_y;
         }
@@ -931,7 +945,7 @@ class Block extends AbstractFrameReflower
         // If the frame has a specified width, then we don't need to check
         // its children
         if ($fixed_width) {
-            $min = (float) $style->length_in_pt($width, 0);
+            $min = (float) $style->resolve_content_box_size($width, 0, 0);
             $max = $min;
         } else {
             [$min, $max] = $this->get_min_max_child_width();

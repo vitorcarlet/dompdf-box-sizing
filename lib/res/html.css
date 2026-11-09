@@ -136,6 +136,7 @@ plaintext, pre, xmp {
 
 table {
   display: table;
+  box-sizing: border-box;
   border-spacing: 2px;
   border-collapse: separate;
   margin-top: 0;

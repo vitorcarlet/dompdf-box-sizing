@@ -104,10 +104,10 @@ class Image extends AbstractFrameReflower
 
         $width = $cbw === null && Helpers::is_percent($computed_width)
             ? "auto"
-            : $style->length_in_pt($computed_width, $cbw ?? 0);
+            : $style->resolve_content_box_size($computed_width, $cbw ?? 0, $cbw ?? 0);
         $height = $cbh === null && Helpers::is_percent($computed_height)
             ? "auto"
-            : $style->length_in_pt($computed_height, $cbh ?? 0);
+            : $style->resolve_content_box_size($computed_height, $cbh ?? 0, $cbw ?? 0, true);
         $min_width = $this->resolve_min_width($cbw);
         $max_width = $this->resolve_max_width($cbw);
         $min_height = $this->resolve_min_height($cbh);

@@ -321,7 +321,7 @@ abstract class AbstractFrameReflower
         $min_width = $style->min_width;
 
         return $min_width !== "auto"
-            ? $style->length_in_pt($min_width, $cbw ?? 0)
+            ? $style->resolve_content_box_size($min_width, $cbw ?? 0, $cbw ?? 0)
             : 0.0;
     }
 
@@ -341,7 +341,7 @@ abstract class AbstractFrameReflower
         $max_width = $style->max_width;
 
         return $max_width !== "none"
-            ? $style->length_in_pt($max_width, $cbw ?? INF)
+            ? $style->resolve_content_box_size($max_width, $cbw ?? INF, $cbw ?? 0)
             : INF;
     }
 
@@ -361,7 +361,7 @@ abstract class AbstractFrameReflower
         $min_height = $style->min_height;
 
         return $min_height !== "auto"
-            ? $style->length_in_pt($min_height, $cbh ?? 0)
+            ? $style->resolve_content_box_size($min_height, $cbh ?? 0, $this->_frame->get_containing_block()[2] ?? 0, true)
             : 0.0;
     }
 
@@ -381,7 +381,7 @@ abstract class AbstractFrameReflower
         $max_height = $style->max_height;
 
         return $max_height !== "none"
-            ? $style->length_in_pt($style->max_height, $cbh ?? INF)
+            ? $style->resolve_content_box_size($max_height, $cbh ?? INF, $this->_frame->get_containing_block()[2] ?? 0, true)
             : INF;
     }
 

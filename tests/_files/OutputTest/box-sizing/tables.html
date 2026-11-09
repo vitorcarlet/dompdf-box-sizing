@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+@page { size: 460pt 650pt; margin: 20pt; }
+body { margin: 0; font: 10pt Helvetica; }
+h1 { font-size: 16pt; }
+p { margin: 12pt 0 6pt; }
+table { width: 400pt; border-spacing: 0; }
+td, th { padding: 10pt; border: 2pt solid #194b70; background: #d9eaf5; text-align: left; }
+.border { box-sizing: border-box; }
+.content { box-sizing: content-box; }
+</style>
+</head>
+<body>
+<h1>Box sizing: tables</h1>
+<p>Fixed layout: first cell 120pt, remaining cell 280pt</p>
+<table style="table-layout:fixed"><tr><td class="border" style="width:120pt">120pt outer</td><td>Remaining width</td></tr></table>
+<p>50% border-box cell: 200pt outer width</p>
+<table><tr><td class="border" style="width:50%">50% including border and padding</td><td>Remaining width</td></tr></table>
+<p>50% content-box cell: 224pt outer width</p>
+<table><tr><td class="content" style="width:50%">50% content + 24pt</td><td>Remaining width</td></tr></table>
+<p>Collapsed borders: width and height include resolved half borders</p>
+<table style="border-collapse:collapse"><tr><th class="border" style="width:120pt;height:60pt">120pt outer</th><th>Header</th></tr></table>
+<p>Spanning cell: 80pt total height, padding counted once</p>
+<table><tr><td class="border" rowspan="2" style="width:200pt;height:80pt">Two rows</td><td>First row</td></tr><tr><td>Second row</td></tr></table>
+<p>Table height: rows, cell backgrounds and borders expand together</p>
+<table style="height:100pt"><tr><td style="vertical-align:middle">First row</td><td>Data</td></tr><tr><td style="vertical-align:bottom">Second row</td><td>Data</td></tr></table>
+</body>
+</html>

@@ -733,21 +733,29 @@ class Cellmap
             $first_col = $frame_info["columns"][0];
 
             // Resolve the frame's width
+            $width = $style->width;
             if ($this->_fixed_layout) {
-                list($frame_min, $frame_max) = [0, 10e-10];
+                list($frame_min, $frame_max) = [0, 0];
+                if ($width !== "auto" && !Helpers::is_percent($width)) {
+                    $frame_min = (float) $style->resolve_content_box_size($width, 0, 0)
+                        + (float) $style->length_in_pt([
+                            $style->padding_left, $style->padding_right,
+                            $style->border_left_width, $style->border_right_width,
+                            $style->margin_left, $style->margin_right
+                        ], 0);
+                    $frame_max = $frame_min;
+                }
             } else {
                 list($frame_min, $frame_max) = $frame->get_min_max_width();
             }
 
-            $width = $style->width;
-
             $val = null;
-            if (Helpers::is_percent($width) && $colspan === 1) {
+            if (Helpers::is_percent($width) && ($colspan === 1 || $this->_fixed_layout)) {
                 $var = "percent";
-                $val = (float)rtrim($width, "% ");
-            } elseif ($width !== "auto" && $colspan === 1) {
+                $val = (float)rtrim($width, "% ") / $colspan;
+            } elseif ($width !== "auto" && ($colspan === 1 || $this->_fixed_layout)) {
                 $var = "absolute";
-                $val = $frame_min;
+                $val = $frame_min / $colspan;
             }
 
             $min = 0;
@@ -769,10 +777,9 @@ class Cellmap
                 $max += $col["max-width"];
             }
 
-            if ($frame_min > $min && $colspan === 1) {
+            if ($frame_min > $min && ($colspan === 1 || $this->_fixed_layout)) {
                 // The frame needs more space.  Expand each sub-column
-                // FIXME try to avoid putting this dummy value when table-layout:fixed
-                $inc = ($this->_fixed_layout ? 10e-10 : ($frame_min - $min));
+                $inc = ($frame_min - $min) / $colspan;
                 for ($c = 0; $c < $colspan; $c++) {
                     $col =& $this->get_column($first_col + $c);
                     $col["min-width"] += $inc;
@@ -780,8 +787,7 @@ class Cellmap
             }
 
             if ($frame_max > $max) {
-                // FIXME try to avoid putting this dummy value when table-layout:fixed
-                $inc = ($this->_fixed_layout ? 10e-10 : ($frame_max - $max) / $colspan);
+                $inc = ($frame_max - $max) / $colspan;
                 for ($c = 0; $c < $colspan; $c++) {
                     $col =& $this->get_column($first_col + $c);
                     $col["max-width"] += $inc;
@@ -797,6 +803,43 @@ class Cellmap
                 $col["absolute"] = $col["min-width"];
                 $col["max-width"] = $col["min-width"];
             }
+        }
+    }
+
+    /**
+     * Resolve percentage cell widths to outer column percentages once the
+     * table width is known. Content-box declarations also require padding and
+     * borders; border-box declarations require only the inter-cell spacing.
+     */
+    public function resolve_percent_columns(float $table_width): void
+    {
+        if ($table_width <= 0 || $this->_columns_locked) {
+            return;
+        }
+
+        $percentages = [];
+        foreach ($this->_frames as $info) {
+            $style = $info["frame"]->get_style();
+            $count = count($info["columns"]);
+            if ($style->display !== "table-cell" || !Helpers::is_percent($style->width)
+                || ($count !== 1 && !$this->_fixed_layout)
+                || ($this->_fixed_layout && !in_array(0, $info["rows"], true))
+            ) {
+                continue;
+            }
+
+            $width = $style->resolve_content_box_size($style->width, $table_width, $table_width)
+                + (float) $style->length_in_pt([
+                    $style->padding_left, $style->padding_right,
+                    $style->border_left_width, $style->border_right_width,
+                    $style->margin_left, $style->margin_right
+                ], $table_width);
+            foreach ($info["columns"] as $column) {
+                $percentages[$column] = max($percentages[$column] ?? 0, $width * 100 / $table_width / $count);
+            }
+        }
+        foreach ($percentages as $column => $percentage) {
+            $this->_columns[$column]["percent"] = $percentage;
         }
     }
 
@@ -950,7 +993,23 @@ class Cellmap
      */
     public function set_frame_heights(float $table_height, float $content_height): void
     {
-        // Distribute the increased height proportionally amongst each row
+        // Resize rows before updating frames so borders and subsequent rows
+        // use the same geometry as the cells.
+        $row_count = $this->_num_rows;
+        $y = $this->_rows ? reset($this->_rows)["y"] : 0.0;
+        foreach ($this->_rows as $i => &$row) {
+            $row["y"] = $y;
+            if ($i >= $row_count) {
+                $row["height"] = 0.0;
+                continue;
+            }
+            $row["height"] = $content_height > 0
+                ? $row["height"] * $table_height / $content_height
+                : $table_height / max(1, $row_count);
+            $y += $row["height"];
+        }
+        unset($row);
+
         foreach ($this->_frames as $arr) {
             $frame = $arr["frame"];
 
@@ -963,16 +1022,15 @@ class Cellmap
                 $h += $this->_rows[$row]["height"];
             }
 
-            if ($content_height > 0) {
-                $new_height = ($h / $content_height) * $table_height;
-            } else {
-                $new_height = 0.0;
-            }
-
             if ($frame instanceof TableCellFrameDecorator) {
-                $frame->set_cell_height($new_height);
+                // Move descendants only with their cell; row-group frames
+                // must not move the same descendants a second time.
+                $position = $this->get_frame_position($frame);
+                $frame->move(0, $position["y"] - $frame->get_position("y"));
+                $frame->set_cell_height($h);
             } else {
-                $frame->get_style()->set_used("height", $new_height);
+                $frame->set_position($this->get_frame_position($frame));
+                $frame->get_style()->set_used("height", $h);
             }
         }
     }
