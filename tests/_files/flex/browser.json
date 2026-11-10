@@ -1,0 +1,434 @@
+{
+  "browser": "Google Chrome 156.0.8078.79",
+  "boxes": {
+    "grow": [
+      0,
+      0,
+      399.99609375,
+      19.9921875
+    ],
+    "grow-a": [
+      0,
+      0,
+      126.66796875,
+      19.9921875
+    ],
+    "grow-b": [
+      146.66015625,
+      0,
+      253.3359375,
+      19.9921875
+    ],
+    "freeze": [
+      0,
+      0,
+      399.99609375,
+      19.9921875
+    ],
+    "freeze-a": [
+      0,
+      0,
+      120,
+      19.9921875
+    ],
+    "freeze-b": [
+      120,
+      0,
+      279.99609375,
+      19.9921875
+    ],
+    "shrink": [
+      0,
+      0,
+      399.99609375,
+      19.9921875
+    ],
+    "shrink-a": [
+      0,
+      0,
+      249.99609375,
+      19.9921875
+    ],
+    "shrink-b": [
+      249.99609375,
+      0,
+      150,
+      19.9921875
+    ],
+    "partial": [
+      0,
+      0,
+      399.99609375,
+      19.9921875
+    ],
+    "partial-a": [
+      0,
+      0,
+      139.9921875,
+      19.9921875
+    ],
+    "partial-b": [
+      139.9921875,
+      0,
+      159.99609375,
+      19.9921875
+    ],
+    "justify": [
+      0,
+      0,
+      399.99609375,
+      19.9921875
+    ],
+    "justify-a": [
+      72.50390625,
+      0,
+      49.9921875,
+      19.9921875
+    ],
+    "justify-b": [
+      277.5,
+      0,
+      49.9921875,
+      19.9921875
+    ],
+    "auto": [
+      0,
+      0,
+      399.99609375,
+      19.9921875
+    ],
+    "auto-a": [
+      300.01171875,
+      0,
+      49.9921875,
+      19.9921875
+    ],
+    "auto-b": [
+      350.00390625,
+      0,
+      49.9921875,
+      19.9921875
+    ],
+    "wrap": [
+      0,
+      0,
+      210,
+      49.98046875
+    ],
+    "wrap-a": [
+      0,
+      0,
+      99.99609375,
+      19.9921875
+    ],
+    "wrap-b": [
+      109.9921875,
+      0,
+      99.99609375,
+      19.9921875
+    ],
+    "wrap-c": [
+      0,
+      29.98828125,
+      99.99609375,
+      19.9921875
+    ],
+    "wrap-reverse": [
+      0,
+      0,
+      210,
+      99.99609375
+    ],
+    "wrap-reverse-a": [
+      0,
+      80.00390625,
+      99.99609375,
+      19.9921875
+    ],
+    "wrap-reverse-b": [
+      109.9921875,
+      80.00390625,
+      99.99609375,
+      19.9921875
+    ],
+    "wrap-reverse-c": [
+      0,
+      0,
+      99.99609375,
+      19.9921875
+    ],
+    "reverse": [
+      0,
+      0,
+      399.99609375,
+      19.9921875
+    ],
+    "reverse-a": [
+      340.0078125,
+      0,
+      49.9921875,
+      19.9921875
+    ],
+    "reverse-b": [
+      260.015625,
+      0,
+      69.99609375,
+      19.9921875
+    ],
+    "column": [
+      0,
+      0,
+      399.99609375,
+      99.99609375
+    ],
+    "column-a": [
+      0,
+      0,
+      399.99609375,
+      30
+    ],
+    "column-b": [
+      0,
+      39.99609375,
+      399.99609375,
+      60
+    ],
+    "align": [
+      0,
+      0,
+      399.99609375,
+      99.99609375
+    ],
+    "align-a": [
+      0,
+      39.99609375,
+      49.9921875,
+      19.9921875
+    ],
+    "align-b": [
+      49.9921875,
+      80.00390625,
+      49.9921875,
+      19.9921875
+    ],
+    "box-sizing": [
+      0,
+      0,
+      399.99609375,
+      49.9921875
+    ],
+    "box-sizing-a": [
+      0,
+      0,
+      189.99609375,
+      49.9921875
+    ],
+    "box-sizing-b": [
+      209.98828125,
+      0,
+      190.0078125,
+      49.9921875
+    ],
+    "percentage": [
+      0,
+      0,
+      399.99609375,
+      19.9921875
+    ],
+    "percentage-a": [
+      0,
+      0,
+      189.99609375,
+      19.9921875
+    ],
+    "percentage-b": [
+      209.98828125,
+      0,
+      190.0078125,
+      19.9921875
+    ],
+    "cyclic": [
+      0,
+      0,
+      399.99609375,
+      39.984375
+    ],
+    "cyclic-a": [
+      0,
+      0,
+      399.99609375,
+      19.9921875
+    ],
+    "cyclic-b": [
+      0,
+      19.9921875,
+      399.99609375,
+      19.9921875
+    ],
+    "basis-middle": [
+      0,
+      0,
+      399.99609375,
+      19.9921875
+    ],
+    "basis-middle-a": [
+      0,
+      0,
+      49.9921875,
+      19.9921875
+    ],
+    "basis-middle-b": [
+      49.9921875,
+      0,
+      49.9921875,
+      19.9921875
+    ],
+    "basis-middle-c": [
+      99.984375,
+      0,
+      49.9921875,
+      19.9921875
+    ],
+    "minimum": [
+      0,
+      0,
+      399.99609375,
+      99.99609375
+    ],
+    "minimum-a": [
+      0,
+      39.99609375,
+      49.9921875,
+      19.9921875
+    ],
+    "min-wins": [
+      0,
+      0,
+      399.99609375,
+      19.9921875
+    ],
+    "min-wins-a": [
+      0,
+      0,
+      249.99609375,
+      19.9921875
+    ],
+    "min-wins-b": [
+      249.99609375,
+      0,
+      150,
+      19.9921875
+    ],
+    "column-min": [
+      0,
+      0,
+      399.99609375,
+      99.99609375
+    ],
+    "column-min-a": [
+      0,
+      0,
+      399.99609375,
+      45
+    ],
+    "column-min-b": [
+      0,
+      54.99609375,
+      399.99609375,
+      45
+    ],
+    "column-cross": [
+      0,
+      0,
+      399.99609375,
+      19.9921875
+    ],
+    "column-cross-a": [
+      0,
+      0,
+      49.9921875,
+      19.9921875
+    ],
+    "content-basis": [
+      0,
+      0,
+      399.99609375,
+      19.9921875
+    ],
+    "content-basis-a": [
+      0,
+      0,
+      99.99609375,
+      19.9921875
+    ],
+    "content-basis-b": [
+      99.99609375,
+      0,
+      199.9921875,
+      19.9921875
+    ]
+  },
+  "cases": {
+    "grow": "grow",
+    "grow-a": "grow",
+    "grow-b": "grow",
+    "freeze": "freeze",
+    "freeze-a": "freeze",
+    "freeze-b": "freeze",
+    "shrink": "shrink",
+    "shrink-a": "shrink",
+    "shrink-b": "shrink",
+    "partial": "partial",
+    "partial-a": "partial",
+    "partial-b": "partial",
+    "justify": "justify",
+    "justify-a": "justify",
+    "justify-b": "justify",
+    "auto": "auto",
+    "auto-a": "auto",
+    "auto-b": "auto",
+    "wrap": "wrap",
+    "wrap-a": "wrap",
+    "wrap-b": "wrap",
+    "wrap-c": "wrap",
+    "wrap-reverse": "wrap-reverse",
+    "wrap-reverse-a": "wrap-reverse",
+    "wrap-reverse-b": "wrap-reverse",
+    "wrap-reverse-c": "wrap-reverse",
+    "reverse": "reverse",
+    "reverse-a": "reverse",
+    "reverse-b": "reverse",
+    "column": "column",
+    "column-a": "column",
+    "column-b": "column",
+    "align": "align",
+    "align-a": "align",
+    "align-b": "align",
+    "box-sizing": "box-sizing",
+    "box-sizing-a": "box-sizing",
+    "box-sizing-b": "box-sizing",
+    "percentage": "percentage",
+    "percentage-a": "percentage",
+    "percentage-b": "percentage",
+    "cyclic": "cyclic",
+    "cyclic-a": "cyclic",
+    "cyclic-b": "cyclic",
+    "basis-middle": "basis-middle",
+    "basis-middle-a": "basis-middle",
+    "basis-middle-b": "basis-middle",
+    "basis-middle-c": "basis-middle",
+    "minimum": "minimum",
+    "minimum-a": "minimum",
+    "min-wins": "min-wins",
+    "min-wins-a": "min-wins",
+    "min-wins-b": "min-wins",
+    "column-min": "column-min",
+    "column-min-a": "column-min",
+    "column-min-b": "column-min",
+    "column-cross": "column-cross",
+    "column-cross-a": "column-cross",
+    "content-basis": "content-basis",
+    "content-basis-a": "content-basis",
+    "content-basis-b": "content-basis"
+  }
+}

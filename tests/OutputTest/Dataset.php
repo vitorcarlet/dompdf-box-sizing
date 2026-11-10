@@ -39,7 +39,8 @@ final class Dataset
         $options = new Options([
             'chroot' => realpath(__DIR__ . '/../_files'),
             'imageByteSizeLimit' => '50M',
-            'isRemoteEnabled' => true
+            'isRemoteEnabled' => true,
+            'isFlexboxEnabled' => strpos($this->name, 'flex/') === 0
         ]);
         $options->setPdfBackend($backend);
 

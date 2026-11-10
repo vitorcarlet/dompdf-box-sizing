@@ -1,0 +1,14 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+@page { size:400pt 300pt; margin:20pt; }
+body { margin:0; font-family:DejaVu Sans; font-size:10pt; line-height:14pt; color:#193047; }
+.flex { display:flex; gap:20pt; align-items:flex-start; }
+.column { flex:1; min-width:0; }
+h1 { font-size:15pt; line-height:20pt; margin:0 0 10pt; }
+p { margin:0 0 8pt; }
+.end { margin-top:12pt; border-top:1pt solid #92aabb; }
+</style>
+<h1>Independent column continuations</h1>
+<div class="flex"><div class="column"><p>Left 01. A flex item can continue on another page while retaining its resolved width.</p><p>Left 02. Each paragraph should appear exactly once in the PDF.</p><p>Left 03. The gap between columns remains twenty points.</p><p>Left 04. Text continues within the left column.</p><p>Left 05. The final paragraph of the left column.</p></div><div class="column"><p>Right 01. Both columns start on the same page.</p><p>Right 02. This column has more text and therefore needs more space.</p><p>Right 03. Page boundaries do not push the unfinished sibling to a different horizontal position.</p><p>Right 04. Each paragraph is measured at the final allocated width.</p><p>Right 05. The first completed column must not repeat.</p><p>Right 06. Another paragraph to exercise continuation.</p><p>Right 07. The final paragraph of the right column.</p></div></div>
+<div class="end">Content after the flex container.</div>

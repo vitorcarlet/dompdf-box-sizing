@@ -105,6 +105,33 @@ class Page extends AbstractFrameDecorator
         $this->bottom_page_edge = $cbh - $margin_bottom;
     }
 
+    /** Resume the same physical page while committing another flex sibling. */
+    public function resume_flex_layout(): void
+    {
+        $this->_page_full = false;
+    }
+
+    public function finish_flex_page(): void
+    {
+        $this->_page_full = true;
+    }
+
+    /** Flex cannot introduce breaks inside an atomic table row or positioned box. */
+    public function get_flex_page_bottom(Frame $frame): float
+    {
+        if ($this->_in_table > 0) { return INF; }
+        for ($ancestor = $frame; $ancestor && $ancestor !== $this; $ancestor = $ancestor->get_parent()) {
+            if ($ancestor->is_absolute()) { return INF; }
+        }
+        return $this->get_bottom_page_edge();
+    }
+
+    /** Internal page constraint used by flex fragmentation. */
+    public function get_bottom_page_edge(): float
+    {
+        return $this->bottom_page_edge ?? INF;
+    }
+
     /**
      * Returns true if the page is full and is no longer accepting frames.
      *

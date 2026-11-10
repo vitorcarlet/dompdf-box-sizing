@@ -67,8 +67,32 @@ class Factory
     {
         $style = $frame->get_style();
         $display = $style->display;
+        $parent = $frame->get_parent();
+        if ($parent && in_array($parent->get_style()->display, ["flex", "inline-flex"], true)
+            && !$frame->is_text_node() && !$frame->is_absolute()
+        ) {
+            // Flex items are blockified; float does not take them out of flow.
+            $style->set_used("float", "none");
+            if ($display === "inline" || $display === "inline-block") {
+                $style->set_prop("display", "block");
+                $display = "block";
+            } elseif ($display === "inline-flex") {
+                $style->set_prop("display", "flex");
+                $display = "flex";
+            } elseif ($display === "inline-table") {
+                $style->set_prop("display", "table");
+                $display = "table";
+            }
+        }
 
         switch ($display) {
+
+            case "flex":
+            case "inline-flex":
+                $positioner = $display === "flex" ? "Block" : "Inline";
+                $decorator = "Flex";
+                $reflower = "Flex";
+                break;
 
             case "block":
                 $positioner = "Block";

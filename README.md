@@ -176,6 +176,13 @@ Files accessed through web-based protocols have the following requirements:
 Files accessed through the local file system have the following requirement:
  * The file must fall within the path(s) specified for the Dompdf "chroot" option
 
+## Experimental Flexbox in this fork
+
+This fork includes opt-in native PHP Flexbox and `gap` support. Enable
+`isFlexboxEnabled` before loading HTML. See [the implementation and compatibility
+notes](docs/flexbox.md) for supported properties, pagination, tests and limitations.
+The upstream limitations below still apply with this option disabled.
+
 ## Limitations (Known Issues)
 
  * Table cells are not pageable, meaning a table row must fit on a single page: See https://github.com/dompdf/dompdf/issues/98

@@ -8,6 +8,20 @@ namespace Dompdf;
 
 class Options
 {
+    /** @var bool Enable experimental horizontal Flexbox layout. */
+    private $isFlexboxEnabled = false;
+
+    public function setIsFlexboxEnabled($enabled)
+    {
+        $this->isFlexboxEnabled = (bool) $enabled;
+        return $this;
+    }
+
+    public function getIsFlexboxEnabled(): bool
+    {
+        return $this->isFlexboxEnabled;
+    }
+
     /**
      * The root of your DOMPDF installation
      *

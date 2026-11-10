@@ -28,6 +28,25 @@ abstract class AbstractFrameDecorator extends Frame
 {
     const DEFAULT_COUNTER = "-dompdf-default-counter";
 
+    /** @var array|null Internal flex-item assignment, in content-box pt. */
+    private $flexLayout;
+
+    public function set_flex_layout(?array $layout): void
+    {
+        $this->flexLayout = $layout;
+    }
+
+    public function get_flex_layout(): ?array
+    {
+        return $this->flexLayout;
+    }
+
+    /** Isolated ancestor state for intrinsic measurement. */
+    public function copy_counter_state(self $source): void
+    {
+        $this->_counters = $source->_counters;
+    }
+
     /**
      * array([id] => counter_value) (for generated content)
      *
@@ -238,6 +257,7 @@ abstract class AbstractFrameDecorator extends Frame
 
     function reset()
     {
+        $this->flexLayout = null;
         $this->_frame->reset();
         $this->_reflower->reset();
         $this->reset_generated_content();
@@ -891,6 +911,10 @@ abstract class AbstractFrameDecorator extends Frame
 
     final function position()
     {
+        if ($this->flexLayout !== null) {
+            $this->set_position($this->flexLayout["x"], $this->flexLayout["y"]);
+            return;
+        }
         $this->_positioner->position($this);
     }
 

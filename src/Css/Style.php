@@ -50,6 +50,18 @@ use Dompdf\Helpers;
  *
  * Actual CSS parsing is performed in the {@link Stylesheet} class.
  *
+ * @property string               $flex_direction
+ * @property string               $flex_wrap
+ * @property float                $flex_grow
+ * @property float                $flex_shrink
+ * @property float|string         $flex_basis
+ * @property int                  $order
+ * @property string               $justify_content
+ * @property string               $align_items
+ * @property string               $align_self
+ * @property string               $align_content
+ * @property float|string         $row_gap
+ * @property float|string         $column_gap
  * @property string               $azimuth
  * @property string               $background_attachment
  * @property array|string         $background_color
@@ -277,7 +289,7 @@ class Style
         "block",
         // "flow-root",
         "list-item",
-        // "flex",
+        "flex",
         // "grid",
         "table"
     ];
@@ -290,7 +302,7 @@ class Style
     public const INLINE_LEVEL_TYPES = [
         "inline",
         "inline-block",
-        // "inline-flex",
+        "inline-flex",
         // "inline-grid",
         "inline-table"
     ];
@@ -318,7 +330,7 @@ class Style
     /**
      * List of all block (inner) display types.
      */
-    public const BLOCK_TYPES = ["block", "inline-block", "table-cell", "list-item"];
+    public const BLOCK_TYPES = ["flex", "inline-flex", "block", "inline-block", "table-cell", "list-item"];
 
     /**
      * List of all table (inner) display types.
@@ -367,6 +379,9 @@ class Style
      * @var array<string, string[]>
      */
     protected static $_props_shorthand = [
+        "flex" => ["flex_grow", "flex_shrink", "flex_basis"],
+        "flex_flow" => ["flex_direction", "flex_wrap"],
+        "gap" => ["row_gap", "column_gap"],
         "background" => [
             "background_image",
             "background_position",
@@ -571,6 +586,9 @@ class Style
             "text_align"
         ],
         "font_size" => [
+            "flex_basis",
+            "row_gap",
+            "column_gap",
             "background_position",
             "background_size",
             "border_top_width",
@@ -906,6 +924,21 @@ class Style
 
             // CSS3
             $d["box_sizing"] = "content-box";
+            $d["flex"] = "";
+            $d["flex_flow"] = "";
+            $d["gap"] = "";
+            $d["flex_direction"] = "row";
+            $d["flex_wrap"] = "nowrap";
+            $d["flex_grow"] = 0.0;
+            $d["flex_shrink"] = 1.0;
+            $d["flex_basis"] = "auto";
+            $d["order"] = 0;
+            $d["justify_content"] = "flex-start";
+            $d["align_items"] = "stretch";
+            $d["align_self"] = "auto";
+            $d["align_content"] = "stretch";
+            $d["row_gap"] = "normal";
+            $d["column_gap"] = "normal";
             $d["opacity"] = 1.0;
             $d["background_size"] = ["auto", "auto"];
             $d["transform"] = [];
@@ -2887,14 +2920,17 @@ class Style
 
         // Make sure that common valid, but unsupported display types have an
         // appropriate fallback display type
+        if (($val === "flex" || $val === "inline-flex")
+            && !$this->_stylesheet->get_dompdf()->getOptions()->getIsFlexboxEnabled()
+        ) {
+            $val = $val === "flex" ? "block" : "inline-block";
+        }
         switch ($val) {
             case "flow-root":
-            case "flex":
             case "grid":
             case "table-caption":
                 $val = "block";
                 break;
-            case "inline-flex":
             case "inline-grid":
                 $val = "inline-block";
                 break;
@@ -2920,6 +2956,8 @@ class Style
                 // case "table-column":
                 // case "table-caption":
                     return "block";
+                case "inline-flex":
+                    return "flex";
                 case "inline-table":
                     return "table";
                 default:
@@ -3423,6 +3461,129 @@ class Style
         }
 
         return $break;
+    }
+
+    protected function _compute_flex_direction(string $val)
+    {
+        return in_array(strtolower($val), ["row", "row-reverse", "column", "column-reverse"], true) ? strtolower($val) : null;
+    }
+
+    protected function _compute_flex_wrap(string $val)
+    {
+        return in_array(strtolower($val), ["nowrap", "wrap", "wrap-reverse"], true) ? strtolower($val) : null;
+    }
+
+    protected function _compute_flex_grow(string $val)
+    {
+        $number = self::CSS_NUMBER;
+        return preg_match("/^$number$/", $val) && (float) $val >= 0 ? (float) $val : null;
+    }
+
+    protected function _compute_flex_shrink(string $val)
+    {
+        return $this->_compute_flex_grow($val);
+    }
+
+    protected function _compute_flex_basis(string $val)
+    {
+        $val = strtolower($val);
+        return $val === "auto" || $val === "content" ? $val : $this->compute_length_percentage_positive($val);
+    }
+
+    protected function _compute_order(string $val)
+    {
+        return $this->compute_integer($val);
+    }
+
+    protected function _compute_justify_content(string $val)
+    {
+        $val = strtolower($val);
+        return in_array($val, ["flex-start", "flex-end", "center", "space-between", "space-around", "space-evenly"], true) ? $val : null;
+    }
+
+    protected function _compute_align_items(string $val)
+    {
+        $val = strtolower($val);
+        return in_array($val, ["flex-start", "flex-end", "center", "stretch", "baseline"], true) ? $val : null;
+    }
+
+    protected function _compute_align_self(string $val)
+    {
+        return strtolower($val) === "auto" ? "auto" : $this->_compute_align_items($val);
+    }
+
+    protected function _compute_align_content(string $val)
+    {
+        return strtolower($val) === "stretch" ? "stretch" : $this->_compute_justify_content($val);
+    }
+
+    protected function _compute_row_gap(string $val)
+    {
+        return strtolower($val) === "normal" ? "normal" : $this->compute_length_percentage_positive($val);
+    }
+
+    protected function _compute_column_gap(string $val)
+    {
+        return $this->_compute_row_gap($val);
+    }
+
+    protected function _set_gap(string $value): array
+    {
+        $parts = $this->parse_property_value(strtolower($value));
+        if (count($parts) < 1 || count($parts) > 2) {
+            return [];
+        }
+        foreach ($parts as $part) {
+            if ($this->_compute_row_gap($part) === null) {
+                return [];
+            }
+        }
+        return ["row_gap" => $parts[0], "column_gap" => $parts[1] ?? $parts[0]];
+    }
+
+    protected function _set_flex_flow(string $value): array
+    {
+        $parts = $this->parse_property_value(strtolower($value));
+        $direction = null;
+        $wrap = null;
+        foreach ($parts as $part) {
+            if ($direction === null && $this->_compute_flex_direction($part) !== null) {
+                $direction = $part;
+            } elseif ($wrap === null && $this->_compute_flex_wrap($part) !== null) {
+                $wrap = $part;
+            } else {
+                return [];
+            }
+        }
+        return $parts === [] ? [] : ["flex_direction" => $direction ?? "row", "flex_wrap" => $wrap ?? "nowrap"];
+    }
+
+    protected function _set_flex(string $value): array
+    {
+        $value = strtolower($value);
+        if ($value === "none" || $value === "auto") {
+            return ["flex_grow" => $value === "none" ? "0" : "1", "flex_shrink" => $value === "none" ? "0" : "1", "flex_basis" => "auto"];
+        }
+        $parts = $this->parse_property_value($value);
+        if (!$parts || count($parts) > 3) {
+            return [];
+        }
+        $numbers = [];
+        $basis = null;
+        foreach ($parts as $part) {
+            if (count($numbers) < 2 && $this->_compute_flex_grow($part) !== null) {
+                $numbers[] = $part;
+            } elseif ($basis === null && $this->_compute_flex_basis($part) !== null) {
+                // The two flex factors must remain adjacent.
+                if (count($numbers) === 1 && count($parts) === 3) {
+                    return [];
+                }
+                $basis = $part;
+            } else {
+                return [];
+            }
+        }
+        return ["flex_grow" => $numbers[0] ?? "1", "flex_shrink" => $numbers[1] ?? "1", "flex_basis" => $basis ?? "0%"];
     }
 
     /**

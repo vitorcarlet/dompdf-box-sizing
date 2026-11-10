@@ -1,0 +1,26 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+@page { size:450pt 600pt; margin:25pt; }
+body { font-family:DejaVu Sans; font-size:10pt; margin:0; color:#193047; }
+h1 { font-size:18pt; margin:0 0 12pt; }
+h2 { font-size:11pt; margin:14pt 0 6pt; }
+.flex { display:flex; gap:10pt; }
+.card { flex:1; min-width:0; padding:10pt; border:1pt solid #92aabb; box-sizing:border-box; background:#edf4f8; }
+.reverse { flex-direction:row-reverse; align-items:center; height:55pt; }
+.reverse div { width:70pt; height:25pt; padding:4pt; background:#c9dfe9; }
+.wrap { flex-wrap:wrap; gap:8pt 10pt; }
+.wrap div { flex:0 0 115pt; height:30pt; background:#d7e8de; padding:5pt; box-sizing:border-box; }
+.columns { height:100pt; }
+.column { display:flex; flex-direction:column; gap:6pt; }
+.column div { flex:1; background:#dfe4f4; padding:5pt; }
+</style>
+<h1>Experimental Flexbox</h1>
+<h2>Grow, gap and border-box</h2>
+<div class="flex"><div class="card">First card<br>Text wraps within the allocated width.</div><div class="card" style="flex-grow:2">Second card grows twice as much from its zero base.</div></div>
+<h2>Reverse direction and alignment</h2>
+<div class="flex reverse"><div>A</div><div style="height:40pt">B</div><div>C</div></div>
+<h2>Wrapping with separate row and column gaps</h2>
+<div class="flex wrap"><div>One</div><div>Two</div><div>Three</div><div>Four</div><div>Five</div></div>
+<h2>Nested columns</h2>
+<div class="flex columns"><div class="card column"><div>Top</div><div>Bottom</div></div><div class="card">This sibling stretches to the container height.</div></div>

@@ -138,6 +138,9 @@ abstract class AbstractFrameReflower
     protected function _collapse_margins(): void
     {
         $frame = $this->_frame;
+        if ($frame->get_parent() instanceof \Dompdf\FrameDecorator\Flex) {
+            return;
+        }
 
         // Margins of float/absolutely positioned/inline-level elements do not collapse
         if (!$frame->is_in_flow() || $frame->is_inline_level()
@@ -186,6 +189,9 @@ abstract class AbstractFrameReflower
             $style->set_used("margin_bottom", $b);
             $n_style->set_used("margin_top", 0.0);
         }
+
+        // A flex formatting context never collapses margins with its children.
+        if ($frame instanceof \Dompdf\FrameDecorator\Flex) { return; }
 
         // Collapse our first child's margin, if there is no border or padding
         if ($style->border_top_width == 0 && $style->length_in_pt($style->padding_top) == 0) {

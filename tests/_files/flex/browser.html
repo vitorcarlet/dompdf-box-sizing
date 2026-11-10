@@ -1,0 +1,33 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Flex geometry reference</title>
+<!-- Locally authored geometry cases, including adaptations of WPT scenarios:
+ https://github.com/web-platform-tests/wpt/blob/master/css/css-flexbox/flex-factor-less-than-one.html
+ https://github.com/web-platform-tests/wpt/blob/master/css/css-flexbox/flex-shorthand-flex-basis-middle.html
+ No upstream source is copied. Text is omitted to isolate layout from font engines. -->
+<style>
+@page { size:400pt 5000pt; margin:0 }
+body { margin:0; width:400pt }
+.case { display:flex; width:400pt; margin-bottom:10pt; }
+.case > div { height:20pt; min-width:0; }
+</style>
+<div class="case" id="grow" style="gap:20pt"><div id="grow-a" style="flex:1"></div><div id="grow-b" style="flex:2"></div></div>
+<div class="case" id="freeze"><div id="freeze-a" style="flex:1 1 100pt;max-width:120pt"></div><div id="freeze-b" style="flex:1 1 100pt"></div></div>
+<div class="case" id="shrink"><div id="shrink-a" style="flex:0 1 300pt;min-width:250pt"></div><div id="shrink-b" style="flex:0 1 300pt"></div></div>
+<div class="case" id="partial"><div id="partial-a" style="flex:.2 1 100pt"></div><div id="partial-b" style="flex:.3 1 100pt"></div></div>
+<div class="case" id="justify" style="justify-content:space-around;gap:10pt"><div id="justify-a" style="width:50pt"></div><div id="justify-b" style="width:50pt"></div></div>
+<div class="case" id="auto"><div id="auto-a" style="width:50pt;margin-left:auto"></div><div id="auto-b" style="width:50pt"></div></div>
+<div class="case" id="wrap" style="width:210pt;flex-wrap:wrap;gap:10pt"><div id="wrap-a" style="width:100pt"></div><div id="wrap-b" style="width:100pt"></div><div id="wrap-c" style="width:100pt"></div></div>
+<div class="case" id="wrap-reverse" style="width:210pt;height:100pt;flex-wrap:wrap-reverse;gap:10pt;align-content:space-between"><div id="wrap-reverse-a" style="width:100pt"></div><div id="wrap-reverse-b" style="width:100pt"></div><div id="wrap-reverse-c" style="width:100pt"></div></div>
+<div class="case" id="reverse" style="flex-direction:row-reverse;gap:10pt"><div id="reverse-a" style="width:50pt;margin-right:10pt"></div><div id="reverse-b" style="width:70pt"></div></div>
+<div class="case" id="column" style="height:100pt;flex-direction:column;gap:10pt"><div id="column-a" style="flex:1"></div><div id="column-b" style="flex:2"></div></div>
+<div class="case" id="align" style="height:100pt;align-items:center"><div id="align-a" style="width:50pt"></div><div id="align-b" style="width:50pt;align-self:flex-end"></div></div>
+<div class="case" id="box-sizing" style="gap:20pt"><div id="box-sizing-a" style="flex:1;padding:5pt;border:2pt solid;box-sizing:border-box;height:50pt"></div><div id="box-sizing-b" style="flex:1;padding:5pt;border:2pt solid;box-sizing:border-box;height:50pt"></div></div>
+<div class="case" id="percentage" style="gap:5%"><div id="percentage-a" style="flex:1"></div><div id="percentage-b" style="flex:1"></div></div>
+<div class="case" id="cyclic" style="flex-direction:column;gap:10%"><div id="cyclic-a"></div><div id="cyclic-b"></div></div>
+<div class="case" id="basis-middle"><div id="basis-middle-a" style="width:50pt;flex:1 auto 1"></div><div id="basis-middle-b" style="width:50pt;flex:1 auto 1"></div><div id="basis-middle-c" style="width:50pt;flex:1 auto 1"></div></div>
+<div class="case" id="minimum" style="min-height:100pt;align-items:center"><div id="minimum-a" style="width:50pt"></div></div>
+<div class="case" id="min-wins"><div id="min-wins-a" style="flex:1;min-width:250pt;max-width:100pt"></div><div id="min-wins-b" style="flex:1"></div></div>
+<div class="case" id="column-min" style="flex-direction:column;min-height:100pt;gap:10pt"><div id="column-min-a" style="flex:1"></div><div id="column-min-b" style="flex:1"></div></div>
+<div class="case" id="column-cross" style="flex-direction:column;align-items:flex-start"><div id="column-cross-a" style="height:auto"><div style="width:50pt;height:20pt"></div></div></div>
+<div class="case" id="content-basis"><div id="content-basis-a" style="flex:0 1 content;width:50pt"><div style="width:100pt;height:20pt"></div></div><div id="content-basis-b" style="width:200pt"></div></div>

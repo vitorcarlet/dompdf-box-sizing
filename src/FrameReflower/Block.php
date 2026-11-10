@@ -156,7 +156,7 @@ class Block extends AbstractFrameReflower
                     }
                 }
             }
-        } elseif ($style->float !== "none" || $style->display === "inline-block") {
+        } elseif ($style->float !== "none" || in_array($style->display, ["inline-block", "inline-flex"], true)) {
             // Shrink-to-fit width for float and inline block
             // https://www.w3.org/TR/CSS21/visudet.html#float-width
             // https://www.w3.org/TR/CSS21/visudet.html#inlineblock-width
@@ -226,6 +226,10 @@ class Block extends AbstractFrameReflower
         $frame = $this->_frame;
         $style = $frame->get_style();
         $cb = $frame->get_containing_block();
+        $flex = $frame->get_flex_layout();
+        if ($flex !== null && $flex["width"] !== null) {
+            return [$flex["width"], $flex["margin_left"], $flex["margin_right"], 0.0, 0.0];
+        }
 
         if (!isset($cb["w"])) {
             throw new Exception("Box property calculation requires containing block width");
@@ -292,6 +296,11 @@ class Block extends AbstractFrameReflower
      */
     protected function _calculate_restricted_height()
     {
+        $flex = $this->_frame->get_flex_layout();
+        if ($flex !== null && $flex["height"] !== null) {
+            $height = $this->_frame->is_split ? min($flex["height"], $this->_calculate_content_height()) : $flex["height"];
+            return [$height, $flex["margin_top"], $flex["margin_bottom"], 0.0, 0.0];
+        }
         $style = $this->_frame->get_style();
         $cb = $this->_frame->get_containing_block();
         $height = $style->resolve_content_box_size($style->height, $cb["h"] ?? 0, $cb["w"], true);
@@ -323,6 +332,11 @@ class Block extends AbstractFrameReflower
 
         $margin_top = $style->length_in_pt($style->margin_top, $cb["w"]);
         $margin_bottom = $style->length_in_pt($style->margin_bottom, $cb["w"]);
+        $flex = $frame->get_flex_layout();
+        if ($flex !== null) {
+            $margin_top = $flex["margin_top"];
+            $margin_bottom = $flex["margin_bottom"];
+        }
 
         $top = $style->length_in_pt($style->top, $cb["h"]);
         $bottom = $style->length_in_pt($style->bottom, $cb["h"]);
@@ -859,7 +873,8 @@ class Block extends AbstractFrameReflower
 
         $cb_y = $y + $top;
 
-        $height = $style->resolve_content_box_size($style->height, $cb["h"] ?? 0, $cb["w"], true);
+        $flex = $this->_frame->get_flex_layout();
+        $height = $flex["height"] ?? $style->resolve_content_box_size($style->height, $cb["h"] ?? 0, $cb["w"], true);
         if ($height !== "auto") {
             $height = Helpers::clamp($height, $this->resolve_min_height($cb["h"]), $this->resolve_max_height($cb["h"]));
         }

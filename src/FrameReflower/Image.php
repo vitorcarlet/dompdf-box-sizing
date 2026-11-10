@@ -47,6 +47,12 @@ class Image extends AbstractFrameReflower
 
         $this->resolve_dimensions();
         $this->resolve_margins();
+        $assignment = $this->_frame->get_flex_layout();
+        if ($assignment !== null) {
+            foreach (["top", "right", "bottom", "left"] as $side) {
+                $this->_frame->get_style()->set_used("margin_" . $side, $assignment["margin_" . $side]);
+            }
+        }
 
         $frame = $this->_frame;
         $frame->position();
@@ -108,6 +114,11 @@ class Image extends AbstractFrameReflower
         $height = $cbh === null && Helpers::is_percent($computed_height)
             ? "auto"
             : $style->resolve_content_box_size($computed_height, $cbh ?? 0, $cbw ?? 0, true);
+        $flex = $frame->get_flex_layout();
+        if ($flex !== null) {
+            $width = $flex["width"] ?? $width;
+            $height = $flex["height"] ?? $height;
+        }
         $min_width = $this->resolve_min_width($cbw);
         $max_width = $this->resolve_max_width($cbw);
         $min_height = $this->resolve_min_height($cbh);

@@ -102,6 +102,8 @@ class Renderer extends AbstractRenderer
 
         switch ($display) {
 
+            case "flex":
+            case "inline-flex":
             case "block":
             case "list-item":
             case "inline-block":

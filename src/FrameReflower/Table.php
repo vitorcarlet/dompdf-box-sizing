@@ -79,7 +79,10 @@ class Table extends AbstractFrameReflower
         $min_table_width = max($min_width, $this->resolve_min_width($cb["w"]) - $spacing);
         $max_table_width = max($min_table_width, $this->resolve_max_width($cb["w"]) - $spacing);
 
-        if ($width !== "auto") {
+        $flex = $this->_frame->get_flex_layout();
+        if ($flex !== null && $flex["width"] !== null) {
+            $width = max($min_table_width, $flex["width"] - $spacing);
+        } elseif ($width !== "auto") {
             $preferred_width = (float) $style->resolve_content_box_size($width, $cb["w"], $cb["w"]) - $spacing;
 
             if ($preferred_width < $min_table_width) {
@@ -269,7 +272,8 @@ class Table extends AbstractFrameReflower
         $style = $frame->get_style();
         $cb = $frame->get_containing_block();
 
-        $height = $style->resolve_content_box_size($style->height, $cb["h"] ?? 0, $cb["w"], true);
+        $flex = $frame->get_flex_layout();
+        $height = $flex["height"] ?? $style->resolve_content_box_size($style->height, $cb["h"] ?? 0, $cb["w"], true);
         $spacing = $style->border_collapse === "separate" ? $style->border_spacing[1] : 0.0;
         if ($height !== "auto") {
             $height = max(0.0, $height - $spacing);
